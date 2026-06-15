@@ -1,0 +1,246 @@
+{# {% extends "layouts/admin.twig" %}
+
+{% block content %}
+    
+    <!-- Выбор группы -->
+    <div style="margin-bottom: 20px;">
+        <label>Выберите группу: </label>
+        <select id="group-select" style="padding: 5px; width: 300px;">
+            <option value="">-- Выберите группу --</option>
+            {% for group in groups %}
+            <option value="{{ group.id }}">{{ group.university_name }} / {{ group.faculty_name }} / {{ group.group_name }} ({{ group.course }} курс)</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="schedule-container" style="display: none;">
+        <p>
+            <button id="add-schedule-btn">+ Добавить занятие</button>
+        </p>
+
+        <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+            <thead>
+                <tr>
+                    <th>День</th>
+                    <th>1 пара (09:00-10:30)</th>
+                    <th>2 пара (10:45-12:15)</th>
+                    <th>3 пара (12:30-14:00)</th>
+                    <th>4 пара (14:15-15:45)</th>
+                    <th>5 пара (16:00-17:30)</th>
+                </tr>
+            </thead>
+            <tbody id="schedule-table-body">
+                <!-- Заполняется через JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Модальное окно создания/редактирования занятия -->
+    <div id="schedule-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 500px; margin: 50px auto; padding: 20px;">
+            <h3 id="schedule-modal-title">Добавление занятия</h3>
+            <form id="schedule-form">
+                <input type="hidden" id="schedule-id">
+                <input type="hidden" id="schedule-group-id">
+
+                <label>День недели:</label><br>
+                <select id="schedule-day" required style="width: 100%;">
+                    <option value="1">Понедельник</option>
+                    <option value="2">Вторник</option>
+                    <option value="3">Среда</option>
+                    <option value="4">Четверг</option>
+                    <option value="5">Пятница</option>
+                    <option value="6">Суббота</option>
+                </select><br><br>
+
+                <label>Номер пары:</label><br>
+                <select id="schedule-lesson" required style="width: 100%;">
+                    <option value="1">1 пара (09:00 - 10:30)</option>
+                    <option value="2">2 пара (10:45 - 12:15)</option>
+                    <option value="3">3 пара (12:30 - 14:00)</option>
+                    <option value="4">4 пара (14:15 - 15:45)</option>
+                    <option value="5">5 пара (16:00 - 17:30)</option>
+                </select><br><br>
+
+                <label>Предмет:</label><br>
+                <select id="schedule-subject" required style="width: 100%;">
+                    <option value="">Выберите предмет</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <label>Преподаватель:</label><br>
+                <select id="schedule-teacher" style="width: 100%;">
+                    <option value="">Выберите преподавателя</option>
+                    {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.last_name }} {{ teacher.name }} {{ teacher.patronymic }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <label>Аудитория:</label><br>
+                <select id="schedule-room" style="width: 100%;">
+                    <option value="">Выберите аудиторию</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.id }}">{{ room.number }} ({{ room.building|default('—') }})</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <label>Действует с:</label><br>
+                <input type="date" id="schedule-week-start" style="width: 100%;"><br><br>
+
+                <label>Действует по:</label><br>
+                <input type="date" id="schedule-week-end" style="width: 100%;"><br><br>
+
+                <label>Четность недели:</label><br>
+                <select id="schedule-even-week" style="width: 100%;">
+                    <option value="">Каждую неделю</option>
+                    <option value="0">Нечетная неделя</option>
+                    <option value="1">Четная неделя</option>
+                </select><br><br>
+
+                <button type="button" id="close-schedule-modal">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления -->
+    <div id="delete-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 400px; margin: 50px auto; padding: 20px;">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить это занятие?</p>
+            <button id="close-delete-modal">Отмена</button>
+            <button id="confirm-delete">Удалить</button>
+        </div>
+    </div>
+{% endblock %} #}
+
+
+
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+    
+    <!-- Выбор группы -->
+    <div style="margin-bottom: 20px;">
+        <label>Выберите группу: </label>
+        <select id="group-select" style="padding: 5px; width: 300px;">
+            <option value="">-- Выберите группу --</option>
+            {% for group in groups %}
+            <option value="{{ group.id }}">{{ group.university_name }} / {{ group.faculty_name }} / {{ group.group_name }} ({{ group.course }} курс)</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="schedule-container" style="display: none;">
+        <!-- Навигация по неделям -->
+        <div class="week-nav" style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+            <button id="prev-week" class="week-nav-btn">← Предыдущая неделя</button>
+            <span id="current-week" style="font-weight: bold; font-size: 1.1rem;">--</span>
+            <button id="next-week" class="week-nav-btn">Следующая неделя →</button>
+        </div>
+        
+        <p>
+            <button id="add-schedule-btn">+ Добавить занятие</button>
+        </p>
+
+        <div class="table-wrapper" style="overflow-x: auto;">
+            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; min-width: 800px;">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">День</th>
+                        <th>1 пара<br>(09:00-10:30)</th>
+                        <th>2 пара<br>(10:45-12:15)</th>
+                        <th>3 пара<br>(12:30-14:00)</th>
+                        <th>4 пара<br>(14:15-15:45)</th>
+                        <th>5 пара<br>(16:00-17:30)</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-table-body">
+                    <!-- Заполняется через JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания/редактирования занятия -->
+    <div id="schedule-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; width: 500px; margin: 50px auto; padding: 20px; border-radius: 8px;">
+            <h3 id="schedule-modal-title">Добавление занятия</h3>
+            <form id="schedule-form">
+                <input type="hidden" id="schedule-id">
+                <input type="hidden" id="schedule-group-id">
+                <input type="hidden" id="schedule-week-start">
+                <input type="hidden" id="schedule-week-end">
+
+                <label>День недели:</label><br>
+                <select id="schedule-day" required style="width: 100%; padding: 5px;">
+                    <option value="1">Понедельник</option>
+                    <option value="2">Вторник</option>
+                    <option value="3">Среда</option>
+                    <option value="4">Четверг</option>
+                    <option value="5">Пятница</option>
+                    <option value="6">Суббота</option>
+                </select><br><br>
+
+                <label>Номер пары:</label><br>
+                <select id="schedule-lesson" required style="width: 100%; padding: 5px;">
+                    <option value="1">1 пара (09:00 - 10:30)</option>
+                    <option value="2">2 пара (10:45 - 12:15)</option>
+                    <option value="3">3 пара (12:30 - 14:00)</option>
+                    <option value="4">4 пара (14:15 - 15:45)</option>
+                    <option value="5">5 пара (16:00 - 17:30)</option>
+                </select><br><br>
+
+                <label>Предмет:</label><br>
+                <select id="schedule-subject" required style="width: 100%; padding: 5px;">
+                    <option value="">Выберите предмет</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <label>Преподаватель:</label><br>
+                <select id="schedule-teacher" style="width: 100%; padding: 5px;">
+                    <option value="">Выберите преподавателя</option>
+                    {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.last_name }} {{ teacher.name }} {{ teacher.patronymic }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <label>Аудитория:</label><br>
+                <select id="schedule-room" style="width: 100%; padding: 5px;">
+                    <option value="">Выберите аудиторию</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.id }}">{{ room.number }} ({{ room.building|default('—') }})</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <label>Четность недели:</label><br>
+                <select id="schedule-even-week" style="width: 100%; padding: 5px;">
+                    <option value="">Каждую неделю</option>
+                    <option value="0">Нечетная неделя</option>
+                    <option value="1">Четная неделя</option>
+                </select><br><br>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" id="close-schedule-modal" style="padding: 8px 16px;">Отмена</button>
+                    <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none;">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления -->
+    <div id="delete-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; width: 400px; margin: 50px auto; padding: 20px; border-radius: 8px;">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить это занятие?</p>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="close-delete-modal" style="padding: 8px 16px;">Отмена</button>
+                <button id="confirm-delete" style="padding: 8px 16px; background: #dc3545; color: white; border: none;">Удалить</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

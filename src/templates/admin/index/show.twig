@@ -1,0 +1,176 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+    <!-- Управление пользователями -->
+    <div>
+        <strong>Всего пользователей:</strong> <span id="total-users">{{ users|length }}</span>
+    </div>
+    <!-- Поиск -->
+    <form type="GET" id="search-form">
+        <input type="text" id="search-input" placeholder="Поиск по имени, email..." style="padding: 8px; width: 300px;">
+        <button type="button" id="reset-search" style="display: none;">Сбросить</button>
+    </form>
+
+    <br>
+
+    <button id="create-modal-btn">+ Создать пользователя</button>
+
+    <br><br>
+
+    <!-- Таблица пользователей -->
+    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Университет</th>
+                <th>Факультет</th>
+                <th>Группа</th>
+                <th>Телефон</th>
+                <th>Город</th>
+                <th>Регистрация</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="users-table-body">
+            {% for u in users %}
+            <tr data-id="{{ u.id }}">
+                <td>{{ u.id }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.university|default('—') }}</td>
+                <td>{{ u.faculty|default('—') }}</td>
+                <td>{{ u.group_name|default('—') }}</td>
+                <td>{{ u.phone|default('—') }}</td>
+                <td>{{ u.city|default('—') }}</td>
+                <td>{{ u.created_at|date('d.m.Y') }}</td>
+                <td>
+                    <button class="edit-user-btn" data-id="{{ u.id }}">Редактировать</button>
+                    <button class="delete-user-btn" data-id="{{ u.id }}">Удалить</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if users is empty %}
+    <p><em>Пользователи не найдены</em></p>
+    {% endif %}
+
+    {% if total_pages > 1 %}
+    <div>
+        {% for i in 1..total_pages %}
+            {% if i == current_page %}
+                <strong>{{ i }}</strong>
+            {% else %}
+                <a href="?page={{ i }}{% if search %}&search={{ search }}{% endif %}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <!-- Модальное окно редактирования -->
+    <div id="edit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; width: 600px; margin: 50px auto; padding: 20px; border-radius: 8px;">
+            <h3>Редактирование пользователя</h3>
+            <form id="edit-user-form">
+                <input type="hidden" id="edit-user-id">
+
+                <label>Имя:</label><br>
+                <input type="text" id="edit-name" required style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Email:</label><br>
+                <input type="email" id="edit-email" required style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Новый пароль (оставьте пустым, чтобы не менять):</label><br>
+                <input type="password" id="edit-password" style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Университет:</label><br>
+                <select id="edit-university" style="width: 100%; margin-bottom: 10px; padding: 8px;">
+                    <option value="">Выберите университет</option>
+                    {% for university in universities %}
+                    <option value="{{ university.id }}">{{ university.name }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <label>Факультет:</label><br>
+                <select id="edit-faculty" style="width: 100%; margin-bottom: 10px; padding: 8px;">
+                    <option value="">Сначала выберите университет</option>
+                </select><br>
+
+                <label>Группа:</label><br>
+                <select id="edit-group" style="width: 100%; margin-bottom: 10px; padding: 8px;">
+                    <option value="">Сначала выберите факультет</option>
+                </select><br>
+
+                <label>Телефон:</label><br>
+                <input type="tel" id="edit-phone" style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Город:</label><br>
+                <input type="text" id="edit-city" style="width: 100%; margin-bottom: 10px;"><br>
+
+                <button type="button" id="close-edit-user-btn">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания -->
+    <div id="create-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; width: 600px; margin: 50px auto; padding: 20px; border-radius: 8px;">
+            <h3>Создание пользователя</h3>
+            <form id="create-user-form">
+                <label>Имя:</label><br>
+                <input type="text" id="create-name" required style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Email:</label><br>
+                <input type="email" id="create-email" required style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Пароль:</label><br>
+                <input type="password" id="create-password" required style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Университет:</label><br>
+                <select id="create-university" style="width: 100%; margin-bottom: 10px; padding: 8px;">
+                    <option value="">Выберите университет</option>
+                    {% for university in universities %}
+                    <option value="{{ university.id }}">{{ university.name }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <label>Факультет:</label><br>
+                <select id="create-faculty" style="width: 100%; margin-bottom: 10px; padding: 8px;">
+                    <option value="">Сначала выберите университет</option>
+                </select><br>
+
+                <label>Группа:</label><br>
+                <select id="create-group" style="width: 100%; margin-bottom: 10px; padding: 8px;">
+                    <option value="">Сначала выберите факультет</option>
+                </select><br>
+
+                <label>Телефон:</label><br>
+                <input type="tel" id="create-phone" style="width: 100%; margin-bottom: 10px;"><br>
+
+                <label>Город:</label><br>
+                <input type="text" id="create-city" style="width: 100%; margin-bottom: 10px;"><br>
+
+                <button type="button" id="close-create-modal-btn">Отмена</button>
+                <button type="submit">Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления -->
+    <div id="delete-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; width: 400px; margin: 50px auto; padding: 20px; border-radius: 8px;">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить пользователя <strong id="delete-user-name"></strong>?</p>
+            <p style="color: red;">Это действие нельзя отменить.</p>
+
+            <button id="close-delete-user-btn">Отмена</button>
+            <button id="confirm-delete">Удалить</button>
+        </div>
+    </div>
+{% endblock %}

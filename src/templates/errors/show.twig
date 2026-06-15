@@ -1,0 +1,36 @@
+{% extends "layouts/errors.twig" %}
+
+{% block content %}
+
+    <div class="error-container">
+        <div class="error-code">{{ code|default('null') }}</div>
+        <div class="error-title">{{ errors_server.title|raw }}</div>
+
+        <div class="error-message">{{ errors_server.message|raw }}</div>
+
+        {% if show_details and show_details == 'true' %}
+
+            {% if errors_details %}
+                <div class="error-details" >
+                    <span>Причина ошибки:</span>
+                    {% for error_detail in errors_details %}
+                        <div><p>{{ error_detail }}</p></div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="error-details">
+                    <span>Не удалось отобразить детали</span>
+                </div>
+            {% endif %}
+            
+        {% endif %}
+
+        <div class="error-actions">
+            <button class="btn btn-secondary" id="btn">
+                <i class="fas fa-arrow-left"></i> Вернуться назад
+            </button>
+        </div>
+
+    </div>
+
+{% endblock %}

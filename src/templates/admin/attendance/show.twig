@@ -1,0 +1,60 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+    
+    <div style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+        <div>
+            <label>Выберите группу: </label><br>
+            <select id="group-select" style="padding: 5px; width: 250px;">
+                <option value="">-- Выберите группу --</option>
+                {% for group in groups %}
+                <option value="{{ group.id }}">{{ group.university_name }} / {{ group.faculty_name }} / {{ group.group_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label>Дата: </label><br>
+            <input type="date" id="date-select" value="{{ "now"|date('Y-m-d') }}" style="padding: 5px;">
+        </div>
+        
+        <div>
+            <button id="load-attendance-btn" style="padding: 5px 15px;">📋 Загрузить</button>
+            <button id="save-attendance-btn" style="padding: 5px 15px; background: #28a745; color: white;">💾 Сохранить</button>
+        </div>
+    </div>
+
+    <div id="attendance-container" style="display: none;">
+        <div class="table-wrapper" style="overflow-x: auto;">
+            <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>Студент</th>
+                        <th>Email</th>
+                        <th>Пара 1</th>
+                        <th>Пара 2</th>
+                        <th>Пара 3</th>
+                        <th>Пара 4</th>
+                        <th>Пара 5</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <style>
+        .status-select {
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .status-present { background: #d4edda; color: #155724; }
+        .status-absent { background: #f8d7da; color: #721c24; }
+        .status-late { background: #fff3cd; color: #856404; }
+        .status-excused { background: #cce5ff; color: #004085; }
+        .attendance-cell { min-width: 100px; }
+        .student-name { font-weight: bold; }
+    </style>
+
+{% endblock %}

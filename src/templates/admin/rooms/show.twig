@@ -1,0 +1,170 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+    <div>
+        <strong>Всего аудиторий:</strong> <span id="total-rooms">{{ total_rooms }}</span>
+    </div>
+    <p>
+        <button id="create-room-btn">+ Добавить аудиторию</button>
+    </p>
+
+    <!-- Поиск -->
+    <p>
+        <input type="text" id="search-room" placeholder="Поиск по номеру, корпусу, описанию..." style="padding: 5px; width: 300px;">
+        <button id="reset-search-btn" style="display: none;">Сбросить</button>
+    </p>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Номер</th>
+                <th>Корпус</th>
+                <th>Вместимость</th>
+                <th>Тип</th>
+                <th>Оборудование</th>
+                <th>Активна</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="rooms-table-body">
+            {% for room in rooms %}
+            <tr data-id="{{ room.id }}">
+                <td>{{ room.id }}</td>
+                <td>{{ room.number }}</td>
+                <td>{{ room.building|default('—') }}</td>
+                <td>{{ room.capacity }}</td>
+                <td>
+                    {% if room.type == 'lecture' %}
+                        Лекционная
+                    {% elseif room.type == 'lab' %}
+                        Лаборатория
+                    {% elseif room.type == 'practice' %}
+                        Практическая
+                    {% elseif room.type == 'computer' %}
+                        Компьютерная
+                    {% else %}
+                        {{ room.type }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if room.has_computer %}🖥️ {% endif %}
+                    {% if room.has_projector %}📽️ {% endif %}
+                    {% if room.has_board %}📋 {% endif %}
+                </td>
+                <td>{{ room.is_active ? 'Да' : 'Нет' }}</td>
+                <td>
+                    <button class="edit-room-btn" data-id="{{ room.id }}">Редактировать</button>
+                    <button class="delete-room-btn" data-id="{{ room.id }}">Удалить</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8">Аудитории не найдены</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="pagination" style="margin-top: 20px;"></div>
+
+    <!-- Модальное окно создания аудитории -->
+    <div id="create-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 550px; margin: 50px auto; padding: 20px;">
+            <h3>Добавление аудитории</h3>
+            <form id="create-room-form">
+                <label>Номер: <span style="color: red;">*</span></label><br>
+                <input type="text" id="create-number" required style="width: 100%;"><br><br>
+
+                <label>Корпус:</label><br>
+                <input type="text" id="create-building" style="width: 100%;"><br><br>
+
+                <label>Вместимость:</label><br>
+                <input type="number" id="create-capacity" value="0" style="width: 100%;"><br><br>
+
+                <label>Тип:</label><br>
+                <select id="create-type" style="width: 100%;">
+                    <option value="lecture">Лекционная</option>
+                    <option value="lab">Лаборатория</option>
+                    <option value="practice">Практическая</option>
+                </select><br><br>
+
+                <label>Описание:</label><br>
+                <textarea id="create-description" rows="3" style="width: 100%;"></textarea><br><br>
+
+                <label>Оснащение:</label><br>
+                <label>
+                    <input type="checkbox" id="create-has-computer"> Компьютеры
+                </label><br>
+                <label>
+                    <input type="checkbox" id="create-has-projector"> Проектор
+                </label><br>
+                <label>
+                    <input type="checkbox" id="create-has-board" checked> Доска
+                </label><br><br>
+
+                <label>
+                    <input type="checkbox" id="create-active" checked> Активна
+                </label><br><br>
+
+                <button type="button" id="close-create-modal">Отмена</button>
+                <button type="submit">Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования аудитории -->
+    <div id="edit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 550px; margin: 50px auto; padding: 20px;">
+            <h3>Редактирование аудитории</h3>
+            <form id="edit-room-form">
+                <input type="hidden" id="edit-room-id">
+
+                <label>Номер: <span style="color: red;">*</span></label><br>
+                <input type="text" id="edit-number" required style="width: 100%;"><br><br>
+
+                <label>Корпус:</label><br>
+                <input type="text" id="edit-building" style="width: 100%;"><br><br>
+
+                <label>Вместимость:</label><br>
+                <input type="number" id="edit-capacity" value="0" style="width: 100%;"><br><br>
+
+                <label>Тип:</label><br>
+                <select id="edit-type" style="width: 100%;">
+                    <option value="lecture">Лекционная</option>
+                    <option value="lab">Лаборатория</option>
+                    <option value="practice">Практическая</option>
+                </select><br><br>
+
+                <label>Описание:</label><br>
+                <textarea id="edit-description" rows="3" style="width: 100%;"></textarea><br><br>
+
+                <label>Оснащение:</label><br>
+                <label>
+                    <input type="checkbox" id="edit-has-computer"> Компьютеры
+                </label><br>
+                <label>
+                    <input type="checkbox" id="edit-has-projector"> Проектор
+                </label><br>
+                <label>
+                    <input type="checkbox" id="edit-has-board"> Доска
+                </label><br><br>
+
+                <label>
+                    <input type="checkbox" id="edit-active"> Активна
+                </label><br><br>
+
+                <button type="button" id="close-edit-modal">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления -->
+    <div id="delete-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 400px; margin: 50px auto; padding: 20px;">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить аудиторию <strong id="delete-room-name"></strong>?</p>
+            <button id="close-delete-modal">Отмена</button>
+            <button id="confirm-delete">Удалить</button>
+        </div>
+    </div>
+{% endblock %}

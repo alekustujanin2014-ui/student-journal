@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студенческий журнал | Восстановление пароля</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .forgot-wrapper {
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Шапка */
+        .forgot-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .tagline {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Основной контейнер */
+        .forgot-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        /* Уведомления */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .info-text {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-text i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        /* Input группа */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px 14px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #adb5bd;
+        }
+
+        /* Кнопка */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Ссылка назад */
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-link a:hover {
+            color: #667eea;
+        }
+
+        /* Футер */
+        .forgot-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 480px) {
+            .form-header {
+                padding: 25px 20px;
+            }
+            
+            .form-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="forgot-wrapper">
+        <div class="forgot-header">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text">Студенческий журнал</div>
+            <div class="tagline">Площадка для студенческих работ</div>
+        </div>
+
+        <div class="forgot-container">
+            <div class="form-header">
+                <h2>Восстановление пароля</h2>
+                <p>Сброс пароля учетной записи</p>
+            </div>
+
+            <div class="form-container">
+                {% if flash.error %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i> {{ flash.error }}
+                </div>
+                {% endif %}
+
+                {% if flash.success %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> {{ flash.success }}
+                </div>
+                {% endif %}
+
+                <div class="info-text">
+                    <i class="fas fa-envelope"></i> Введите адрес электронной почты,<br>
+                    указанный при регистрации. Мы отправим вам ссылку для сброса пароля.
+                </div>
+
+                <form method="POST" action="/forgot" id="forgot-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="input-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" name="email" id="email" placeholder="Электронная почта"
+                            value="{{ old.email|default('') }}" required>
+                    </div>
+
+                    <button type="submit" class="btn" id="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Отправить ссылку
+                    </button>
+
+                    <div class="back-link">
+                        <a href="/login">
+                            <i class="fas fa-arrow-left"></i> Вернуться ко входу
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="forgot-footer">
+            <p>© 2023 Студенческий журнал. Все права защищены.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('forgot-form');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const email = document.getElementById('email').value;
+                    
+                    if (!email) {
+                        e.preventDefault();
+                        alert('Пожалуйста, введите email');
+                        return;
+                    }
+                    
+                    submitBtn.classList.add('loading');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+                    submitBtn.disabled = true;
+                    
+                    // Таймаут на случай если форма не отправится
+                    setTimeout(() => {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 10000);
+                });
+            }
+
+            // Валидация email при вводе
+            const emailInput = document.getElementById('email');
+            if (emailInput) {
+                emailInput.addEventListener('input', function() {
+                    if (this.validity.typeMismatch) {
+                        this.style.borderColor = '#dc3545';
+                    } else {
+                        this.style.borderColor = '#e9ecef';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

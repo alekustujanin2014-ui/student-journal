@@ -1,0 +1,181 @@
+
+.schedule-content {
+    padding: 0;
+}
+
+.section {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 3px solid #667eea;
+    padding-left: 15px;
+}
+
+.week-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    padding: 12px 20px;
+    border-radius: 12px;
+}
+
+.week-nav-btn {
+    padding: 8px 20px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.week-nav-btn:hover {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.week-current {
+    font-weight: 600;
+    color: #333;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid #e9ecef;
+    padding: 12px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.schedule-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #555;
+}
+
+.schedule-table td {
+    color: #333;
+}
+
+.lesson-time {
+    font-weight: 600;
+    color: #667eea;
+    white-space: nowrap;
+}
+
+.lesson-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.lesson-teacher {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.lesson-room {
+    font-size: 0.75rem;
+    background: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* Таблица экзаменов */
+.exams-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.exams-table th,
+.exams-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.exams-table th {
+    background-color: #f7fafc;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.exams-table tr:hover {
+    background-color: #f7fafc;
+}
+
+/* Badges для типов экзаменов */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-exam {
+    background-color: #fed7d7;
+    color: #c53030;
+}
+
+.badge-credit {
+    background-color: #c6f6d5;
+    color: #276749;
+}
+
+/* Дата экзамена */
+.exam-date {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Аудитория */
+.building {
+    font-size: 11px;
+    color: #718096;
+}
+
+/* Пустое состояние */
+.empty-row td {
+    text-align: center;
+    padding: 40px;
+}
+
+.empty-state {
+    color: #a0aec0;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}

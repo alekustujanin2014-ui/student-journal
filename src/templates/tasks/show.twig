@@ -1,0 +1,133 @@
+{% extends "layouts/main.twig" %}
+
+{% block content %}
+<div class="homework-content">
+    <div class="section">
+        <div class="section-header-flex">
+            <div class="section-title">
+                <i class="fas fa-tasks"></i> Домашние задания
+            </div>
+            <button class="refresh-btn" id="refresh-homework">
+                <i class="fas fa-sync-alt"></i> Обновить содержимое
+            </button>
+        </div>
+        <!-- Фильтры -->
+        <div class="filters-bar" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+            <div class="filter-group" style="flex: 2;">
+                <label>Поиск:</label><br>
+                <input type="text" id="search-homework" placeholder="Поиск по названию или предмету..." style="padding: 8px; width: 100%; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div class="filter-group">
+                <label>Статус:</label><br>
+                <select id="status-filter" style="padding: 8px; width: 160px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="all">Все задания</option>
+                    <option value="not_submitted">Не выполнено</option>
+                    <option value="pending">На проверке</option>
+                    <option value="approved">Принято</option>
+                    <option value="rejected">Отклонено</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>&nbsp;</label><br>
+                <button id="reset-filters" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">Сбросить</button>
+            </div>
+        </div>
+        <div id="homework-container" class="homework-grid">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Загрузка заданий...
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно отправки задания -->
+    <div id="submitModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="submit-modal-title">Отправка задания</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="submit-homework-info" style="margin-bottom: 20px;">
+                    <p><strong id="submit-homework-title"></strong></p>
+                    <p id="submit-homework-deadline" style="color: #666; font-size: 0.9rem;"></p>
+                </div>
+                <form id="submit-form" enctype="multipart/form-data">
+                    <input type="hidden" id="submit-homework-id">
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>Комментарий к работе:</label>
+                        <textarea id="submit-comment" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>Файл с работой (PDF, DOC, DOCX, ZIP):</label>
+                        <input type="file" id="submit-file" accept=".pdf,.doc,.docx,.zip" style="width: 100%; padding: 8px;">
+                        <small style="color: #999;">Максимальный размер файла: 10MB</small>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                        <button type="button" class="modal-close-btn" style="padding: 10px 20px;">Отмена</button>
+                        <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer;">Отправить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# <!-- Модальное окно просмотра результата -->
+    <div id="resultModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Результат проверки</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 20px;">
+                    <div id="result-score" style="font-size: 2rem; font-weight: bold; margin-bottom: 15px;"></div>
+                    <div id="result-status" style="margin-bottom: 15px;"></div>
+                    <div id="result-comment" style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: left;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn">Закрыть</button>
+            </div>
+        </div>
+    </div> #}
+
+    <!-- Модальное окно просмотра результата (отдельное, по центру) -->
+    <div id="resultModal" class="modal result-modal" style="display: none;">
+        <div class="modal-content result-modal-content">
+            <div class="modal-header result-modal-header">
+                <h2><i class="fas fa-chart-line"></i> Результат проверки</h2>
+                <button class="modal-close result-modal-close">&times;</button>
+            </div>
+            <div class="modal-body result-modal-body">
+                <div class="result-container">
+                    <div class="result-score-wrapper">
+                        <div class="result-score-circle" id="result-score-circle">
+                            <span id="result-score-value">0</span>
+                            <small>баллов</small>
+                        </div>
+                    </div>
+                    <div class="result-status" id="result-status">
+                        <i class="fas fa-spinner fa-spin"></i> Загрузка...
+                    </div>
+                    <div class="result-divider"></div>
+                    <div class="result-comment-wrapper">
+                        <div class="result-comment-title">
+                            <i class="fas fa-comment-dots"></i> Комментарий преподавателя
+                        </div>
+                        <div class="result-comment-text" id="result-comment-text">
+                            —
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer result-modal-footer">
+                <button class="modal-close-btn result-close-btn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

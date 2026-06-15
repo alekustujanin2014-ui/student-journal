@@ -1,0 +1,286 @@
+{% extends "layouts/main.twig" %}
+
+{% block content %}
+
+<div class="profile-content">
+    <div class="profile-layout">
+        <!-- Левая колонка -->
+        <div class="profile-left">
+            <!-- Аватар и информация -->
+            <div class="profile-card">
+                <div class="profile-avatar-full">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar }}" alt="{{ user.name }}">
+                        <div class="avatar-overlay"></div>
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="profile-name">{{ user.name|default('Пользователь') }}</div>
+            
+                <div class="profile-info-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Дата рождения: {{ user.birth_date|default('Не указано') }}</span>
+                </div>
+            
+                <div class="profile-info-row">
+                    <i class="fas fa-venus-mars"></i>
+                    <span>Пол: 
+                        {% if user.gender == 'male' %}Мужской
+                        {% elseif user.gender == 'female' %}Женский
+                        {% else %}Не указано{% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Статистика -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Статистика</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Посещаемость: 
+                        {% if attendance.attendance_percent > 0 %}
+                            <strong style="color: #28a745;">{{ attendance.attendance_percent }}%</strong>
+                        {% else %}
+                            <span style="color: #999;">—</span>
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="info-detail">
+                    <i class="fas fa-tasks"></i>
+                    <span>Всего заданий: {{ stats.total_homework|default(0) }}</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Выполнено: {{ stats.approved_count|default(0) }}</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-star"></i>
+                    <span>Набрано баллов: {{ stats.total_score|default(0) }}</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-percent"></i>
+                    <span>Средний балл: 
+                        {% if stats.avg_score > 0 %}
+                            <strong style="color: #28a745;">{{ stats.avg_score }}</strong> / 100
+                        {% else %}
+                            <span style="color: #999;">—</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-chart-simple"></i>
+                    <span>Успеваемость: 
+                        {% if stats.average_percent > 0 %}
+                            <div class="progress-bar">
+                                <div class="progress" style="width: {{ stats.average_percent }}%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <span>{{ stats.average_percent }}%</span>
+                                </div>
+                            </div>
+                        {% else %}
+                            <span style="color: #999;">—</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>Последний вход: {{ user.last_login|date('d.m.Y H:i')|default('Неизвестно') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка -->
+        <div class="profile-right">
+            <!-- Контактная информация -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-address-card"></i>
+                    <span>Контактная информация</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ user.phone|default('Не указано') }}</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-city"></i>
+                    <span>{{ user.city|default('Не указано') }}</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ user.email }}</span>
+                </div>
+            </div>
+
+            <!-- Образование -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Образование</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-university"></i>
+                    <span>Университет: {{ user.university|default('Не указано') }}</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-chalkboard-user"></i>
+                    <span>Факультет: {{ user.faculty|default('Не указано') }}</span>
+                </div>
+                <div class="info-detail">
+                    <i class="fas fa-users"></i>
+                    <span>Группа: {{ user.group_name|default('Не указано') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-content {
+    padding: 0;
+}
+
+.profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 25px;
+}
+
+.profile-left {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profile-avatar-full {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.profile-avatar-full img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.profile-info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid #e9ecef;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.profile-info-row i {
+    width: 20px;
+    color: #667eea;
+}
+
+.info-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.info-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 15px 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.info-card-header i {
+    font-size: 1.1rem;
+}
+
+.info-detail {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.info-detail i {
+    width: 20px;
+    color: #667eea;
+}
+
+.info-detail:last-child {
+    border-bottom: none;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 28px;
+    background: #e9ecef;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: width 0.5s ease;
+    border-radius: 14px;
+}
+
+@media (max-width: 768px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+</style>
+
+{% endblock %}

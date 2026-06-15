@@ -1,0 +1,125 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+    <h2>Управление новостями</h2>
+    <div>
+        <strong>Всего новостей:</strong> <span id="total-news">{{ total_news }}</span>
+    </div>
+    <p>
+        <button id="create-news-btn">+ Добавить новость</button>
+    </p>
+
+    <!-- Поиск -->
+    <p>
+        <input type="text" id="search-news" placeholder="Поиск по заголовку или содержанию..." style="padding: 5px; width: 300px;">
+        <button id="reset-search-btn" style="display: none;">Сбросить</button>
+    </p>
+
+    <p>
+        <label>Фильтр по университету:</label>
+        <select id="filter-university">
+            <option value="">Все университеты</option>
+            {% for university in universities %}
+            <option value="{{ university.id }}">{{ university.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Заголовок</th>
+                <th>Университет</th>
+                <th>Просмотры</th>
+                <th>Опубликована</th>
+                <th>Дата создания</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="news-table-body">
+            {% for news in news_list %}
+            <tr data-id="{{ news.id }}">
+                <td>{{ news.id }}</td>
+                <td>
+                    <strong>{{ news.title }}</strong>
+                    {% if news.excerpt %}
+                        <br><small>{{ news.excerpt|slice(0, 80) }}...</small>
+                    {% endif %}
+                </td>
+                <td>{{ news.university_name|default('—') }}</td>
+                <td>{{ news.views|default(0) }}</td>
+                <td>
+                    {% if news.published %}
+                        Да
+                    {% else %}
+                        Нет
+                    {% endif %}
+                </td>
+                <td>{{ news.created_at|date('d.m.Y H:i') }}</td>
+                <td>
+                    <button class="edit-news-btn" data-id="{{ news.id }}">Редактировать</button>
+                    <button class="delete-news-btn" data-id="{{ news.id }}">Удалить</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">Новости не найдены</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Модальное окно создания/редактирования -->
+    <div id="news-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 600px; margin: 50px auto; padding: 20px;">
+            <h3 id="news-modal-title">Добавление новости</h3>
+            <form id="news-form">
+                <input type="hidden" id="news-id">
+
+                <label>Университет:</label><br>
+                <select id="news-university" required>
+                    <option value="">Выберите университет</option>
+                    {% for university in universities %}
+                    <option value="{{ university.id }}">{{ university.name }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+
+                <label>Заголовок:</label><br>
+                <input type="text" id="news-title" required style="width: 100%;">
+                <br><br>
+
+                <label>Краткое описание:</label><br>
+                <textarea id="news-excerpt" rows="3" style="width: 100%;"></textarea>
+                <br><br>
+
+                <label>Полное содержание:</label><br>
+                <textarea id="news-content" rows="10" required style="width: 100%;"></textarea>
+                <br><br>
+
+                <label>URL изображения:</label><br>
+                <input type="text" id="news-image" style="width: 100%;">
+                <br><br>
+
+                <label>
+                    <input type="checkbox" id="news-published" checked> Опубликовать
+                </label>
+                <br><br>
+
+                <button type="button" id="close-news-modal-btn">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления -->
+    <div id="delete-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 400px; margin: 50px auto; padding: 20px;">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить новость <strong id="delete-news-title"></strong>?</p>
+            <button id="close-delete-modal-btn">Отмена</button>
+            <button id="confirm-delete-news">Удалить</button>
+        </div>
+    </div>
+{% endblock %}

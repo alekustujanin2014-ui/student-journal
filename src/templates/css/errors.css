@@ -1,0 +1,106 @@
+.error-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+}
+
+.error-container {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Анимации */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Иконка */
+.error-icon {
+    font-size: 5rem;
+    color: #667eea;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Код ошибки */
+.error-code {
+    font-size: 6rem;
+    font-weight: 800;
+    color: #333;
+    line-height: 1;
+    margin-bottom: 15px;
+    animation: slideIn 0.5s ease;
+}
+
+/* Заголовок */
+.error-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    animation: slideIn 0.5s ease 0.1s both;
+}
+
+/* Сообщение */
+.error-message {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 30px;
+    line-height: 1.6;
+    animation: slideIn 0.5s ease 0.2s both;
+}
+
+/* Отладка */
+.debug-info {
+    margin-top: 30px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-align: left;
+    font-family: monospace;
+    border-left: 3px solid #667eea;
+}
+
+.debug-info p {
+    margin: 5px 0;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .error-code {
+        font-size: 4rem;
+    }
+
+    .error-title {
+        font-size: 1.2rem;
+    }
+
+    .error-message {
+        font-size: 0.85rem;
+    }
+}

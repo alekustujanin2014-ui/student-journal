@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студенческий журнал | {{ title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/path/to/favicon.ico">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    {% if custom_style_name %}   
+        <link rel="stylesheet" href="/css/{{ custom_style_name }}.css">
+    {% endif %}
+    <!-- Внутрение стили -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Основной контейнер */
+        .app-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Шапка */
+        .app-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .tagline {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Навигация */
+        .app-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Профиль пользователя */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-avatar i {
+            font-size: 1.2rem;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+
+        .user-profile:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #555;
+            transition: all 0.2s;
+            border-radius: 8px;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 5px 0;
+        }
+
+        /* Уведомления */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Основное содержимое */
+        .app-main {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+        }
+
+        .main-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        /* Футер */
+        .app-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .app-wrapper {
+                padding: 15px;
+            }
+            
+            .app-nav {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .nav-links {
+                justify-content: center;
+            }
+            
+            .user-profile {
+                justify-content: center;
+            }
+            
+            .user-dropdown {
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            
+            .user-profile:hover .user-dropdown {
+                transform: translateX(-50%) translateY(0);
+            }
+            
+            .main-header {
+                padding: 15px 20px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+
+
+        /* Секция с кнопкой обновления */
+        .section-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header-flex:not(:first-child) {
+            margin-top: 25px;
+        }
+
+        .refresh-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #555;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .refresh-btn i {
+            font-size: 0.8rem;
+        }
+
+        .refresh-btn.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .refresh-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+            /* Иконка оповещения */
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .notification-icon i {
+            font-size: 1.2rem;
+            color: #555;
+            transition: all 0.3s;
+        }
+
+        .notification-icon:hover i {
+            color: #667eea;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Модальное окно уведомлений */
+        .notifications-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notifications-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 80vh;
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .notifications-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 18px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notifications-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .notifications-modal-close:hover {
+            transform: scale(1.1);
+        }
+
+        .notifications-modal-body {
+            padding: 0;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background: #f0f3ff;
+        }
+
+        .notification-item.unread .notification-title {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .notification-icon {
+            margin: 0;
+        }
+
+        .notification-icon i {
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: #999;
+        }
+
+        .notifications-modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 8px;
+            width: 100%;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .mark-all-read:hover {
+            background: #f0f0f0;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-group-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #555;
+            margin-left: 5px;
+        }
+
+        .user-group-badge i {
+            font-size: 0.65rem;
+            color: #667eea;
+        }
+
+        .user-group-badge span {
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .user-group-badge span {
+                display: none;
+            }
+
+            .user-group-badge {
+                padding: 4px 8px;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Шапка -->
+        <header class="app-header">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text">Студенческий журнал</div>
+        </header>
+        <!-- Навигация -->
+        <nav class="app-nav">
+            <div class="nav-links">
+                <a href="/" class="nav-link {% if active == 'home' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="/schedule" class="nav-link {% if active == 'schedule' %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i> Расписание
+                </a>
+                <a href="/tasks" class="nav-link {% if active == 'tasks' %}active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i> Домашние задания
+                </a>
+            </div>
+
+            <!-- Профиль пользователя с аватаркой -->
+            <div class="user-profile">
+
+                <div class="user-group-badge" title="{{ user.group_name|default('Группа не указана') }}">
+                    <i class="fas fa-users"></i>
+                    <span>{{ user.group_name|default('—') }}</span>
+                </div>
+
+                <div class="user-avatar">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar }}" alt="{{ user.name }}">
+                    {% else %}
+                        <i class="fas fa-user"></i>
+                    {% endif %}
+                </div>
+                <div class="user-name">{{ user.name|default('Гость') }}</div>
+
+                <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: #999;"></i>
+
+                <!-- Выпадающее меню -->
+                <div class="user-dropdown">
+                    <a href="/profile" class="dropdown-item">
+                        <i class="fas fa-user"></i> Мой профиль
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/logout" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Flash сообщения -->
+        {% if flash.success %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> {{ flash.success }}
+        </div>
+        {% endif %}
+
+        {% if flash.error %}
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> {{ flash.error }}
+        </div>
+        {% endif %}
+
+        <!-- Основное содержимое -->
+        <main class="app-main">
+            <div class="main-header">
+                <h2>
+                    <i class="{{ icon|default('fas fa-newspaper') }}"></i>
+                    {{ page_title|default('Страница') }}
+                </h2>
+            </div>
+            <div class="main-content">
+                {% block content %}
+                <p>Здесь будет содержимое страницы {{ page_title|default('') }}</p>
+                
+                {% endblock %}
+            </div>
+        </main>
+
+        <!-- Футер -->
+        <footer class="app-footer">
+            <p>© Студенческий журнал. Все права защищены.</p>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Активная навигация по текущему URL
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href !== '/' && currentPath.startsWith(href)) {
+                    link.classList.add('active');
+                } else if (href === '/' && currentPath === '/') {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    {% if custom_js_name %}
+        <script>
+            window.csrfToken = '{{ csrf_token }}';
+        </script>
+        <script src="/js/{{custom_js_name}}.js" type="module"></script>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends "layouts/main.twig" %}
+
+{% block content %}
+<div class="home-content">
+    <!-- Новости колледжа -->
+    <div class="section">
+        <div class="section-header-flex">
+            <div class="section-title">
+                <i class="fas fa-newspaper"></i> Новости вашего учреждения
+            </div>
+            <button class="refresh-btn" id="refresh-news">
+                <i class="fas fa-sync-alt"></i> Обновить содержимое
+            </button>
+        </div>
+
+        <div class="news-grid" id="news-grid">
+            {% for item in news %}
+            <div class="news-card">
+                <div class="news-date">{{ item.published_at|date('d.m.Y') }}</div>
+                <div class="news-title">{{ item.title }}</div>
+                <div class="news-excerpt">{{ item.excerpt|default(item.content|slice(0, 100)) }}</div>
+                <div class="news-stats">
+                    <i class="fas fa-eye"></i> {{ item.views|default(0) }} просмотров
+                </div>
+                <button class="news-link-btn" data-id="{{ item.id }}">Подробнее →</button>
+            </div>
+            {% else %}
+            <div class="news-card">
+                <div class="news-date">—</div>
+                <div class="news-title">Новостей пока нет</div>
+                <div class="news-excerpt">Следите за обновлениями</div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        
+        <!-- Модальное окно для новости -->
+        <div id="newsModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Загрузка...</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-meta" id="modal-meta"></div>
+                    <div class="modal-text" id="modal-text">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i> Загрузка...
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close-btn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

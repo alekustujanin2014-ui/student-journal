@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студенческий журнал | Сброс пароля</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .reset-wrapper {
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .reset-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .tagline {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .reset-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px 14px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #adb5bd;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+        .password-strength {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+        }
+
+        .strength-label {
+            color: #6c757d;
+        }
+
+        .strength-meter {
+            display: flex;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .strength-segment {
+            height: 4px;
+            flex: 1;
+            background-color: #e9ecef;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .strength-segment.active {
+            background-color: #28a745;
+        }
+
+        .strength-text {
+            color: #6c757d;
+            min-width: 60px;
+            font-size: 0.75rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-link a:hover {
+            color: #667eea;
+        }
+
+        .reset-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 480px) {
+            .form-header {
+                padding: 25px 20px;
+            }
+            
+            .form-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reset-wrapper">
+        <div class="reset-header">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text">Студенческий журнал</div>
+            <div class="tagline">Сброс пароля</div>
+        </div>
+
+        <div class="reset-container">
+            <div class="form-header">
+                <h2>Новый пароль</h2>
+                <p>Придумайте надежный пароль</p>
+            </div>
+
+            <div class="form-container">
+                {% if flash.error %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i> {{ flash.error }}
+                </div>
+                {% endif %}
+
+                {% if flash.success %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> {{ flash.success }}
+                </div>
+                {% endif %}
+
+                <form method="POST" action="/reset/{{ token }}" id="reset-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="password" id="reset-password" placeholder="Новый пароль" required>
+                        <i class="fas fa-eye password-toggle" id="toggle-password"></i>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="password_confirm" id="reset-confirm-password" placeholder="Подтверждение пароля" required>
+                        <i class="fas fa-eye password-toggle" id="toggle-confirm-password"></i>
+                    </div>
+
+                    <div class="password-strength" id="password-strength" style="display: none;">
+                        <div class="strength-label">Надежность:</div>
+                        <div class="strength-meter">
+                            <div class="strength-segment"></div>
+                            <div class="strength-segment"></div>
+                            <div class="strength-segment"></div>
+                            <div class="strength-segment"></div>
+                        </div>
+                        <div class="strength-text">слабый</div>
+                    </div>
+
+                    <button type="submit" class="btn" id="submit-btn">
+                        <i class="fas fa-save"></i> Сохранить пароль
+                    </button>
+
+                    <div class="back-link">
+                        <a href="/login">
+                            <i class="fas fa-arrow-left"></i> Вернуться ко входу
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="reset-footer">
+            <p>© 2023 Студенческий журнал. Все права защищены.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Переключение видимости пароля
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('reset-password');
+            const toggleConfirm = document.getElementById('toggle-confirm-password');
+            const confirmInput = document.getElementById('reset-confirm-password');
+
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            if (toggleConfirm && confirmInput) {
+                toggleConfirm.addEventListener('click', function() {
+                    const type = confirmInput.type === 'password' ? 'text' : 'password';
+                    confirmInput.type = type;
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            // Индикатор сложности пароля
+            const strengthContainer = document.getElementById('password-strength');
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    const segments = document.querySelectorAll('.strength-segment');
+                    const strengthText = document.querySelector('.strength-text');
+                    
+                    if (password.length === 0) {
+                        strengthContainer.style.display = 'none';
+                        return;
+                    }
+                    
+                    strengthContainer.style.display = 'flex';
+                    
+                    let strength = 0;
+                    if (password.length >= 6) strength++;
+                    if (password.length >= 8) strength++;
+                    if (/[A-Z]/.test(password)) strength++;
+                    if (/[0-9]/.test(password)) strength++;
+                    if (/[^A-Za-z0-9]/.test(password)) strength++;
+                    strength = Math.min(strength, 4);
+                    
+                    segments.forEach((seg, idx) => {
+                        if (idx < strength) seg.classList.add('active');
+                        else seg.classList.remove('active');
+                    });
+                    
+                    const texts = ['слабый', 'средний', 'хороший', 'сильный', 'отличный'];
+                    strengthText.textContent = texts[strength];
+                });
+            }
+
+            // Валидация формы
+            const form = document.getElementById('reset-form');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const password = passwordInput.value;
+                    const confirm = confirmInput.value;
+                    
+                    if (!password || !confirm) {
+                        e.preventDefault();
+                        alert('Пожалуйста, заполните все поля');
+                        return;
+                    }
+                    
+                    if (password !== confirm) {
+                        e.preventDefault();
+                        alert('Пароли не совпадают');
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        e.preventDefault();
+                        alert('Пароль должен содержать минимум 6 символов');
+                        return;
+                    }
+                    
+                    submitBtn.classList.add('loading');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Сохранение...';
+                    submitBtn.disabled = true;
+                    
+                    setTimeout(() => {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 10000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

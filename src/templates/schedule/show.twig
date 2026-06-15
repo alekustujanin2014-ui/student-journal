@@ -1,0 +1,227 @@
+{% extends "layouts/main.twig" %}
+
+{% block content %}
+<div class="schedule-content">
+    <div class="shedule-section">
+        <div class="section-header-flex">
+            <div class="section-title">
+                <i class="fas fa-calendar"></i> Расписание на неделю
+            </div>
+            <button class="refresh-btn" id="refresh-schedule">
+                <i class="fas fa-sync-alt"></i> Обновить содержимое
+            </button>
+        </div>
+        <div class="week-nav" data-current-offset="{{ current_week.offset|default(0) }}">
+            <button class="week-nav-btn" id="prev-week">← Предыдущая</button>
+            <span class="week-current" id="current-week">{{ current_week.start }} - {{ current_week.end }}</span>
+            <button class="week-nav-btn" id="next-week">Следующая →</button>
+        </div>
+        <div class="table-wrapper">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>Время</th>
+                        <th>ПН</th>
+                        <th>ВТ</th>
+                        <th>СР</th>
+                        <th>ЧТ</th>
+                        <th>ПТ</th>
+                        <th>СБ</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-tbody">
+                    {% set lesson_times = {
+                        1: '09:00 - 10:30',
+                        2: '10:45 - 12:15',
+                        3: '12:30 - 14:00',
+                        4: '14:15 - 15:45',
+                        5: '16:00 - 17:30'
+                    } %}
+                    
+                    {% for lesson_num in 1..5 %}
+                    <tr>
+                        <td class="lesson-time">{{ lesson_times[lesson_num] }}</td>
+                        {% for day in 1..6 %}
+                            <td>
+                                {% set lesson_found = false %}
+                                {% if schedule[day] is defined %}
+                                    {% for item in schedule[day] %}
+                                        {% if item.lesson_number == lesson_num and not lesson_found %}
+                                            {% set lesson_found = true %}
+                                            <div class="lesson-name">{{ item.subject_name }}</div>
+                                            {% if item.teacher_name %}
+                                                <div class="lesson-teacher">{{ item.teacher_last_name }} {{ item.teacher_name|slice(0,1) }}.</div>
+                                            {% endif %}
+                                            {% if item.room_number %}
+                                                <div class="lesson-room">ауд. {{ item.room_number }}</div>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                {% if not lesson_found %}—{% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+    {# <div class="exams-section">
+        <div class="section-header-flex">
+            <div class="section-title">
+                <i class="fas fa-list-ul"></i> Список экзаменов
+            </div>
+            <button class="refresh-btn" id="refresh-exams">
+                <i class="fas fa-sync-alt"></i> Обновить содержимое
+            </button>
+        </div>
+        <div class="table-wrapper">
+            <table class="exams-table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Время</th>
+                        <th>Предмет</th>
+                        <th>Тип</th>
+                        <th>Преподаватель</th>
+                        <th>Аудитория</th>
+                        <th>Примечание</th>
+                    </tr>
+                </thead>
+                <tbody id="exams-tbody">
+                    {% if exams|length > 0 %}
+                        {% for exam in exams %}
+                            <tr>
+                                <td class="exam-date">{{ exam.exam_date|date('d.m.Y') }}</td>
+                                <td class="exam-time">{{ exam.exam_time ? exam.exam_time|date('H:i') : '—' }}</td>
+                                <td class="exam-subject">
+                                    <strong>{{ exam.subject_name }}</strong>
+                                    {% if exam.subject_short %}
+                                        <span class="subject-short">({{ exam.subject_short }})</span>
+                                    {% endif %}
+                                </td>
+                                <td class="exam-type">
+                                    {% if exam.exam_type == 'exam' %}
+                                        <span class="badge badge-exam">Экзамен</span>
+                                    {% else %}
+                                        <span class="badge badge-credit">Зачет</span>
+                                    {% endif %}
+                                </td>
+                                <td class="exam-teacher">
+                                    {% if exam.teacher_name %}
+                                        {{ exam.teacher_last_name }} {{ exam.teacher_name|first }}.
+                                        {% if exam.teacher_patronymic %}
+                                            {{ exam.teacher_patronymic|first }}.
+                                        {% endif %}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td class="exam-room">
+                                    {% if exam.room_number %}
+                                        ауд. {{ exam.room_number }}
+                                        {% if exam.room_building %}
+                                            <span class="building">({{ exam.room_building }})</span>
+                                        {% endif %}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td class="exam-description">{{ exam.description ?: '—' }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr class="empty-row">
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <p>Нет запланированных экзаменов</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div> #}
+    <div class="exams-section">
+    <div class="section-header-flex">
+        <div class="section-title">
+            <i class="fas fa-list-ul"></i> Список экзаменов
+        </div>
+        <button class="refresh-btn" id="refresh-exams">
+            <i class="fas fa-sync-alt"></i> Обновить содержимое
+        </button>
+    </div>
+    <div class="table-wrapper">
+        <table class="exams-table">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Время</th>
+                    <th>Предмет</th>
+                    <th>Тип</th>
+                    <th>Преподаватель</th>
+                    <th>Аудитория</th>
+                    <th>Примечание</th>
+                </tr>
+            </thead>
+            <tbody id="exams-tbody">
+                {% if exams is defined and exams|length > 0 %}
+                    {% for exam in exams %}
+                        <tr>
+                            <td class="exam-date">{{ exam.exam_date|date('d.m.Y') }}</td>
+                            <td class="exam-time">{{ exam.exam_time ? exam.exam_time|date('H:i') : '—' }}</td>
+                            <td class="exam-subject">
+                                <strong>{{ exam.subject_name }}</strong>
+                                {% if exam.subject_short %}
+                                    <span class="subject-short">({{ exam.subject_short }})</span>
+                                {% endif %}
+                            </td>
+                            <td class="exam-type">
+                                {% if exam.exam_type == 'exam' %}
+                                    <span class="badge badge-exam">Экзамен</span>
+                                {% else %}
+                                    <span class="badge badge-credit">Зачет</span>
+                                {% endif %}
+                            </td>
+                            <td class="exam-teacher">
+                                {% if exam.teacher_last_name %}
+                                    {{ exam.teacher_last_name }} 
+                                    {% if exam.teacher_name %}{{ exam.teacher_name|first }}.{% endif %}
+                                    {% if exam.teacher_patronymic %}{{ exam.teacher_patronymic|first }}.{% endif %}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td class="exam-room">
+                                {% if exam.room_number %}
+                                    ауд. {{ exam.room_number }}
+                                    {% if exam.room_building %}({{ exam.room_building }}){% endif %}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td class="exam-description">{{ exam.description ?: '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="empty-row">
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times"></i>
+                                <p>Нет запланированных экзаменов</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}

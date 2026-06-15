@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студенческий журнал | {{ title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+<!-- Статистика -->
+
+<div class="app-wrapper">
+        <!-- Шапка -->
+        <header class="app-header">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text"><h1>Админ-панель</h1></div>
+        </header>
+        <!-- Навигация -->
+        <nav class="app-nav">
+            <div style="display:flex; gap:12px"class="nav-links">
+                <a href="/admin" class="dropdown-item">
+                    <i class="fas fa-users"></i> Главная
+                </a>
+                <a href="/admin/news" class="dropdown-item">
+                    <i class="fas fa-newspaper"></i> Управление новостями
+                </a>
+                <div class="dropdown">
+                    <a href="#" id="manageDropdown">
+                        Управление УД▼
+                    </a>
+                    <div class="dropdown-menu" style="display: none;">
+                        <a href="/admin/subjects">Предметы</a>
+                        <a href="/admin/teachers">Преподаватели</a>
+                        <a href="/admin/rooms">Аудитории</a>
+                        <a href="/admin/schedule">Расписание</a>
+                        <a href="/admin/exams">Экзамены</a>
+                        <a href="/admin/homeworks">ДЗ</a>
+                        <a href="/admin/attendance">Посещаемость</a>
+                    </div>
+                </div>
+                <a href="/logout" class="dropdown-item">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </a>
+            </div>
+        </nav>
+
+        <!-- Flash сообщения -->
+        {% if flash.success %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> {{ flash.success }}
+        </div>
+        {% endif %}
+
+        {% if flash.error %}
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> {{ flash.error }}
+        </div>
+        {% endif %}
+
+        <!-- Основное содержимое -->
+        <main class="app-main">
+            <div class="main-header">
+                <h2>
+                    <i class="{{ icon|default('fas fa-newspaper') }}"></i>
+                    {{ page_title|default('Страница') }}
+                </h2>
+            </div>
+            <div class="main-content">
+                {% block content %}
+                <p>Здесь будет содержимое страницы {{ page_title|default('') }}</p>
+                
+                {% endblock %}
+            </div>
+        </main>
+
+        <!-- Футер -->
+        <footer class="app-footer">
+            <p>© Студенческий журнал. Все права защищены.</p>
+        </footer>
+</div>
+<script>
+    $(document).ready(function() {
+        // Выпадающее меню
+        $('#manageDropdown').on('click', function(e) {
+            e.preventDefault();
+            $('.dropdown-menu').show();
+        });
+
+        // Закрытие при клике вне
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.dropdown').length) {
+                $('.dropdown-menu').hide();
+            }
+        });
+    });
+</script>
+{% if custom_js_name %}
+    <script>
+        window.csrfToken = '{{ csrf_token }}';
+    </script>
+    <script src="/js/{{custom_js_name}}.js" type="module"></script>
+{% endif %}
+
+</body>
+</html>

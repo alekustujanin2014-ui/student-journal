@@ -1,0 +1,116 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+    <div>
+        <strong>Всего преподавателей:</strong> <span id="total-teachers">{{ total_teachers }}</span>
+    </div>
+    <p>
+        <button id="create-teacher-btn">+ Добавить преподавателя</button>
+    </p>
+
+    <!-- Поиск -->
+    <p>
+        <input type="text" id="search-teacher" placeholder="Поиск по имени, фамилии, email..." style="padding: 5px; width: 300px;">
+        <button id="reset-search-btn" style="display: none;">Сбросить</button>
+    </p>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Отчество</th>
+                <th>Email</th>
+                <th>Телефон</th>
+                <th>Дата создания</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="teachers-table-body">
+            {% for teacher in teachers %}
+            <tr data-id="{{ teacher.id }}">
+                <td>{{ teacher.id }}</td>
+                <td>{{ teacher.name }}</td>
+                <td>{{ teacher.last_name }}</td>
+                <td>{{ teacher.patronymic|default('—') }}</td>
+                <td>{{ teacher.email|default('—') }}</td>
+                <td>{{ teacher.phone|default('—') }}</td>
+                <td>{{ teacher.created_at|date('d.m.Y H:i') }}</td>
+                <td>
+                    <button class="edit-teacher-btn" data-id="{{ teacher.id }}">Редактировать</button>
+                    <button class="delete-teacher-btn" data-id="{{ teacher.id }}">Удалить</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8">Преподаватели не найдены</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="pagination" style="margin-top: 20px;"></div>
+
+    <!-- Модальное окно создания преподавателя -->
+    <div id="create-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 500px; margin: 50px auto; padding: 20px;">
+            <h3>Добавление преподавателя</h3>
+            <form id="create-teacher-form">
+                <label>Имя: <span style="color: red;">*</span></label><br>
+                <input type="text" id="create-name" required style="width: 100%;"><br><br>
+
+                <label>Фамилия: <span style="color: red;">*</span></label><br>
+                <input type="text" id="create-last-name" required style="width: 100%;"><br><br>
+
+                <label>Отчество:</label><br>
+                <input type="text" id="create-patronymic" style="width: 100%;"><br><br>
+
+                <label>Email:</label><br>
+                <input type="email" id="create-email" style="width: 100%;"><br><br>
+
+                <label>Телефон:</label><br>
+                <input type="text" id="create-phone" style="width: 100%;"><br><br>
+
+                <button type="button" id="close-create-modal">Отмена</button>
+                <button type="submit">Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования преподавателя -->
+    <div id="edit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 500px; margin: 50px auto; padding: 20px;">
+            <h3>Редактирование преподавателя</h3>
+            <form id="edit-teacher-form">
+                <input type="hidden" id="edit-teacher-id">
+
+                <label>Имя: <span style="color: red;">*</span></label><br>
+                <input type="text" id="edit-name" required style="width: 100%;"><br><br>
+
+                <label>Фамилия: <span style="color: red;">*</span></label><br>
+                <input type="text" id="edit-last-name" required style="width: 100%;"><br><br>
+
+                <label>Отчество:</label><br>
+                <input type="text" id="edit-patronymic" style="width: 100%;"><br><br>
+
+                <label>Email:</label><br>
+                <input type="email" id="edit-email" style="width: 100%;"><br><br>
+
+                <label>Телефон:</label><br>
+                <input type="text" id="edit-phone" style="width: 100%;"><br><br>
+
+                <button type="button" id="close-edit-modal">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления -->
+    <div id="delete-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; width: 400px; margin: 50px auto; padding: 20px;">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить преподавателя <strong id="delete-teacher-name"></strong>?</p>
+            <button id="close-delete-modal">Отмена</button>
+            <button id="confirm-delete">Удалить</button>
+        </div>
+    </div>
+{% endblock %}
