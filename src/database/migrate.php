@@ -1,8 +1,8 @@
 <?php
 // migrate.php - скрипт для выполнения миграций базы данных
 
-require_once __DIR__ . '/core/database.php';
-require_once __DIR__ . '/core/logger.php';
+require_once __DIR__ . '/../core/database.php';
+require_once __DIR__ . '/../core/logger.php';
 
 // Настройки подключения к БД (без выбора базы данных)
 $config = [
