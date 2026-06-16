@@ -35,6 +35,12 @@ WORKDIR /var/www/html
 # Копируем файлы проекта
 COPY src/ /var/www/html/
 
+# Создание необходимых директорий
+RUN mkdir -p /var/www/html/logs \
+    && mkdir -p /var/www/html/cache \
+    && mkdir -p /var/www/html/uplodas \
+    && mkdir -p /var/www/html/homework/tasks
+    
 # Устанавливаем права (запускаем от root)
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
