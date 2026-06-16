@@ -17,6 +17,14 @@
 git clone <repository-url>
 cd student-journal
 
+# Создаем все папки разом
+mkdir -p src/logs src/cache src/uploads src/homework/tasks
+
+# Выполните в корне проекта, где лежит ваш docker-compose.yml
+sudo chown -R port:port src/
+# Выполните из корня проекта
+sudo chown -R 777 src/logs src/cache src/uploads src/homework
+
 # Запуск
 docker-compose up -d
 
