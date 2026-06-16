@@ -5,7 +5,7 @@
  * Получить последние новости
  */
 
-function get_news_by_university(PDO $pdo, int $university_id, array $logger, int $limit = 6): array
+function get_news_by_university(PDO $pdo, ?int $university_id, array $logger, int $limit = 6): array
 {
     try {
         $sql = "
